@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Калькулятор окупаемости рекламы — Promo Grozny</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: #f4f5f7;
+    color: #1a1a1a;
+    line-height: 1.5;
+  }
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 32px 20px 80px; }
+  header { margin-bottom: 28px; }
+  header h1 { margin: 0 0 6px; font-size: 28px; }
+  header .sub { color: #666; font-size: 15px; }
+
+  .card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.06);
+  }
+  .card h2 {
+    margin: 0 0 4px;
+    font-size: 19px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .card .step-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    background: #1a73e8;
+    color: #fff;
+    border-radius: 50%;
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .card .hint { color: #777; font-size: 14px; margin: 0 0 18px; }
+
+  .row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 18px;
+  }
+  .field { display: flex; flex-direction: column; }
+  .field label {
+    font-weight: 500;
+    font-size: 14px;
+    margin-bottom: 6px;
+    color: #333;
+  }
+  .field .tip {
+    font-size: 12px;
+    color: #888;
+    margin-top: 4px;
+    line-height: 1.4;
+  }
+  .field input, .field select {
+    font-size: 16px;
+    padding: 10px 12px;
+    border: 1.5px solid #d8dadd;
+    border-radius: 8px;
+    background: #fff;
+    font-family: inherit;
+    transition: border-color 0.15s;
+  }
+  .field input:focus, .field select:focus {
+    outline: none;
+    border-color: #1a73e8;
+  }
+
+  .result-banner {
+    padding: 24px;
+    border-radius: 12px;
+    margin-bottom: 18px;
+    text-align: center;
+  }
+  .result-banner.ok { background: #e6f4ea; color: #137333; border: 1px solid #b6e0c0; }
+  .result-banner.bad { background: #fce8e6; color: #c5221f; border: 1px solid #f5b7b1; }
+  .result-banner .verdict {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .result-banner .verdict-sub { font-size: 15px; }
+
+  .metrics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 14px;
+  }
+  .metric {
+    background: #f8f9fb;
+    padding: 16px;
+    border-radius: 8px;
+    border-left: 3px solid #1a73e8;
+  }
+  .metric .name { font-size: 13px; color: #666; margin-bottom: 4px; }
+  .metric .value { font-size: 22px; font-weight: 600; color: #1a1a1a; }
+  .metric .value.bad { color: #c5221f; }
+  .metric .value.ok { color: #137333; }
+  .metric .desc { font-size: 12px; color: #888; margin-top: 4px; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 12px;
+    font-size: 14px;
+  }
+  th, td {
+    text-align: left;
+    padding: 10px 12px;
+    border-bottom: 1px solid #eee;
+  }
+  th {
+    background: #f8f9fb;
+    font-weight: 600;
+    color: #555;
+  }
+  td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  tr.scenario-row.ok td.verdict { color: #137333; font-weight: 600; }
+  tr.scenario-row.bad td.verdict { color: #c5221f; font-weight: 600; }
+
+  .planning-result {
+    background: #f0f4ff;
+    border-radius: 8px;
+    padding: 18px;
+    margin-top: 14px;
+    font-size: 15px;
+    line-height: 1.7;
+  }
+  .planning-result strong { color: #1a73e8; }
+
+  footer {
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid #e0e0e0;
+    color: #888;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  .formula-block {
+    background: #fafafa;
+    padding: 14px 16px;
+    border-radius: 8px;
+    margin-top: 14px;
+    font-size: 13px;
+    color: #555;
+    line-height: 1.7;
+  }
+  .formula-block code {
+    background: #eef;
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-size: 12px;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>Калькулятор окупаемости рекламы в Яндекс.Директе</h1>
+  <p class="sub">Promo Grozny · оцените, во сколько вам обойдётся клиент и заработаете ли вы на рекламе</p>
+</header>
+
+<div class="card">
+  <h2><span class="step-num">1</span> Что вы продаёте</h2>
+  <p class="hint">Выберите услугу — мы подставим примерные значения. Вы их перепишите своими.</p>
+  <div class="row">
+    <div class="field">
+      <label for="service">Услуга</label>
+      <select id="service">
+        <option value="vizitki">Визитки и мелкая полиграфия</option>
+        <option value="flyer">Флаеры, листовки, буклеты</option>
+        <option value="naruzhka">Наружная реклама (баннеры, вывески)</option>
+        <option value="transport" selected>Брендирование транспорта (УТП)</option>
+        <option value="suvenirka">Сувенирная продукция</option>
+        <option value="stickers">Стикеры, этикетки</option>
+        <option value="design">Графический дизайн</option>
+        <option value="complex">Комплексная упаковка магазина / бренда</option>
+      </select>
+      <span class="tip">Подставит средние ориентиры для отрасли. Все цифры ниже можно менять.</span>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <h2><span class="step-num">2</span> Ваши цифры — впишите свои</h2>
+  <p class="hint">Это то, что знаете только вы. Чем точнее — тем точнее результат.</p>
+  <div class="row">
+    <div class="field">
+      <label for="check">Средний чек, ₽</label>
+      <input type="number" id="check" min="0" step="100">
+      <span class="tip">Сколько в среднем платит один клиент за эту услугу.</span>
+    </div>
+    <div class="field">
+      <label for="margin">Маржа, %</label>
+      <input type="number" id="margin" min="0" max="100" step="1">
+      <span class="tip">Сколько остаётся от чека после прямых расходов (материалы, печать, монтаж, доставка). Не знаете — оставьте 40%.</span>
+    </div>
+    <div class="field">
+      <label for="repeats">Заказов от клиента в год</label>
+      <input type="number" id="repeats" min="1" step="1">
+      <span class="tip">Один и тот же клиент сколько раз в год к вам возвращается. Разовый — 1. Постоянный — 3-10.</span>
+    </div>
+    <div class="field">
+      <label for="crDeal">Конверсия из заявки в сделку, %</label>
+      <input type="number" id="crDeal" min="0" max="100" step="1">
+      <span class="tip">Из 100 заявок (звонков, сообщений в WhatsApp) сколько в итоге покупают. Норма для рекламы — 20-40%.</span>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <h2><span class="step-num">3</span> Параметры рекламы</h2>
+  <p class="hint">Эти значения мы уточним после прогноза в Яндекс.Директе. Пока — ориентир для Чечни и СКФО.</p>
+  <div class="row">
+    <div class="field">
+      <label for="cpc">Цена клика в Директе, ₽</label>
+      <input type="number" id="cpc" min="1" step="1">
+      <span class="tip">Сколько стоит один переход на ваш сайт. В Чечне обычно 15-50₽, на узких темах (транспорт, упаковка) выше.</span>
+    </div>
+    <div class="field">
+      <label for="crSite">Конверсия сайта в заявку, %</label>
+      <input type="number" id="crSite" min="0.1" max="20" step="0.1">
+      <span class="tip">Из 100 посетителей сайта сколько оставят заявку. Норма 2-4%. С хорошим сайтом и УТП — до 5-7%.</span>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <h2><span class="step-num">4</span> Результат</h2>
+  <p class="hint">Обновляется автоматически.</p>
+
+  <div id="banner" class="result-banner ok">
+    <div class="verdict" id="verdict">Реклама окупается</div>
+    <div class="verdict-sub" id="verdictSub">С каждого вложенного рубля получите 1.5 ₽ прибыли</div>
+  </div>
+
+  <div class="metrics">
+    <div class="metric">
+      <div class="name">Стоимость заявки (CPL)</div>
+      <div class="value" id="cpl">—</div>
+      <div class="desc">Сколько стоит один звонок/сообщение</div>
+    </div>
+    <div class="metric">
+      <div class="name">Стоимость клиента (CAC)</div>
+      <div class="value" id="cac">—</div>
+      <div class="desc">Сколько стоит один реальный покупатель</div>
+    </div>
+    <div class="metric">
+      <div class="name">Прибыль с клиента за год</div>
+      <div class="value" id="ltv">—</div>
+      <div class="desc">Чек × маржа × повторы</div>
+    </div>
+    <div class="metric">
+      <div class="name">Чистая прибыль с клиента</div>
+      <div class="value" id="netProfit">—</div>
+      <div class="desc">Прибыль минус стоимость привлечения</div>
+    </div>
+    <div class="metric">
+      <div class="name">ROMI (окупаемость)</div>
+      <div class="value" id="romi">—</div>
+      <div class="desc">Сколько % прибыли на рубль рекламы</div>
+    </div>
+    <div class="metric">
+      <div class="name">Макс. допустимый CPL</div>
+      <div class="value" id="maxCpl">—</div>
+      <div class="desc">Выше — реклама не окупится</div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <h2><span class="step-num">5</span> Три сценария</h2>
+  <p class="hint">Что будет в плохом, нормальном и хорошем варианте. Помогает понять диапазон.</p>
+  <table>
+    <thead>
+      <tr>
+        <th>Сценарий</th>
+        <th class="num">Цена клика</th>
+        <th class="num">Конверсия сайта</th>
+        <th class="num">Цена заявки</th>
+        <th class="num">Цена клиента</th>
+        <th class="num">Чистая прибыль / клиента</th>
+        <th>Вердикт</th>
+      </tr>
+    </thead>
+    <tbody id="scenariosBody">
+    </tbody>
+  </table>
+</div>
+
+<div class="card">
+  <h2><span class="step-num">6</span> Сколько нужно бюджета и заявок</h2>
+  <p class="hint">Впишите цель — например, «хочу 10 клиентов в месяц». Посчитаем, сколько на это нужно.</p>
+  <div class="row">
+    <div class="field">
+      <label for="goalClients">Хочу клиентов в месяц</label>
+      <input type="number" id="goalClients" min="1" step="1" value="10">
+      <span class="tip">Сколько реальных покупателей хотите получать каждый месяц.</span>
+    </div>
+  </div>
+  <div class="planning-result" id="planning">
+    Введите цифры выше — увидите план по бюджету.
+  </div>
+</div>
+
+<div class="card">
+  <h2>Как это считается (для тех, кому интересно)</h2>
+  <div class="formula-block">
+    <div><code>Цена заявки</code> = Цена клика ÷ Конверсия сайта</div>
+    <div><code>Цена клиента</code> = Цена заявки ÷ Конверсия в сделку</div>
+    <div><code>Прибыль с клиента</code> = Чек × Маржа% × Заказов в год</div>
+    <div><code>Чистая прибыль</code> = Прибыль с клиента − Цена клиента</div>
+    <div><code>ROMI</code> = Чистая прибыль ÷ Цена клиента × 100%</div>
+    <div><code>Макс. CPL</code> = Прибыль с клиента × Конверсия в сделку</div>
+  </div>
+</div>
+
+<footer>
+  Точные цифры по цене клика и охвату Яндекс.Директа будут получены через Forecast API после получения OAuth-доступа.
+  Сейчас здесь стоят ориентиры для Чечни, Ингушетии, Дагестана и КБР на основе рыночных данных по СКФО.
+  Файл локальный — открывается в любом браузере, ничего никуда не отправляет.
+</footer>
+
+</div>
+
+<script>
+const DEFAULTS = {
+  vizitki:   { check: 1500,   margin: 40, repeats: 3, crDeal: 35, cpc: 20, crSite: 3.0 },
+  flyer:     { check: 5000,   margin: 35, repeats: 2, crDeal: 35, cpc: 25, crSite: 3.0 },
+  naruzhka:  { check: 15000,  margin: 45, repeats: 2, crDeal: 30, cpc: 35, crSite: 2.5 },
+  transport: { check: 80000,  margin: 50, repeats: 2, crDeal: 25, cpc: 50, crSite: 2.0 },
+  suvenirka: { check: 25000,  margin: 35, repeats: 2, crDeal: 30, cpc: 30, crSite: 2.5 },
+  stickers:  { check: 8000,   margin: 40, repeats: 2, crDeal: 35, cpc: 25, crSite: 3.0 },
+  design:    { check: 20000,  margin: 70, repeats: 2, crDeal: 30, cpc: 40, crSite: 2.5 },
+  complex:   { check: 200000, margin: 45, repeats: 1, crDeal: 20, cpc: 60, crSite: 1.5 },
+};
+
+const $ = id => document.getElementById(id);
+
+const fmt = v => {
+  if (!isFinite(v) || isNaN(v)) return '—';
+  return new Intl.NumberFormat('ru-RU', { maximumFractionDigits: 0 }).format(Math.round(v)) + ' ₽';
+};
+const fmtNum = v => {
+  if (!isFinite(v) || isNaN(v)) return '—';
+  return new Intl.NumberFormat('ru-RU', { maximumFractionDigits: 0 }).format(Math.round(v));
+};
+const fmtPct = v => {
+  if (!isFinite(v) || isNaN(v)) return '—';
+  return (v >= 0 ? '+' : '') + Math.round(v) + '%';
+};
+
+function applyDefaults() {
+  const d = DEFAULTS[$('service').value];
+  $('check').value = d.check;
+  $('margin').value = d.margin;
+  $('repeats').value = d.repeats;
+  $('crDeal').value = d.crDeal;
+  $('cpc').value = d.cpc;
+  $('crSite').value = d.crSite;
+  recalc();
+}
+
+function computeMetrics(cpc, crSite, crDeal, check, margin, repeats) {
+  const cpl = cpc / (crSite / 100);
+  const cac = cpl / (crDeal / 100);
+  const ltv = check * (margin / 100) * repeats;
+  const netProfit = ltv - cac;
+  const romi = cac > 0 ? (netProfit / cac) * 100 : 0;
+  const maxCpl = ltv * (crDeal / 100);
+  return { cpl, cac, ltv, netProfit, romi, maxCpl };
+}
+
+function recalc() {
+  const check   = parseFloat($('check').value)   || 0;
+  const margin  = parseFloat($('margin').value)  || 0;
+  const repeats = parseFloat($('repeats').value) || 1;
+  const crDeal  = parseFloat($('crDeal').value)  || 0;
+  const cpc     = parseFloat($('cpc').value)     || 0;
+  const crSite  = parseFloat($('crSite').value)  || 0;
+
+  const m = computeMetrics(cpc, crSite, crDeal, check, margin, repeats);
+
+  $('cpl').textContent = fmt(m.cpl);
+  $('cac').textContent = fmt(m.cac);
+  $('ltv').textContent = fmt(m.ltv);
+  $('netProfit').textContent = fmt(m.netProfit);
+  $('netProfit').className = 'value ' + (m.netProfit >= 0 ? 'ok' : 'bad');
+  $('romi').textContent = fmtPct(m.romi);
+  $('romi').className = 'value ' + (m.romi >= 0 ? 'ok' : 'bad');
+  $('maxCpl').textContent = fmt(m.maxCpl);
+
+  const banner = $('banner');
+  if (m.netProfit >= 0 && isFinite(m.romi)) {
+    banner.className = 'result-banner ok';
+    $('verdict').textContent = 'Реклама окупается';
+    const perRuble = m.cac > 0 ? (m.ltv / m.cac).toFixed(1) : '∞';
+    $('verdictSub').textContent = `С каждого вложенного рубля получите ${perRuble} ₽ выручки`;
+  } else {
+    banner.className = 'result-banner bad';
+    $('verdict').textContent = 'Реклама пока не окупается';
+    const need = m.ltv > 0 ? Math.ceil(m.cac / m.ltv * 100) : 0;
+    $('verdictSub').textContent = `Прибыль с клиента меньше его стоимости. Нужно поднять чек/конверсию/маржу или снизить цену клика`;
+  }
+
+  const scenarios = [
+    { name: 'Пессимист', cpcMul: 1.5, crMul: 0.5 },
+    { name: 'Реалист',   cpcMul: 1.0, crMul: 1.0 },
+    { name: 'Оптимист',  cpcMul: 0.7, crMul: 1.5 },
+  ];
+  const body = $('scenariosBody');
+  body.innerHTML = '';
+  scenarios.forEach(s => {
+    const sCpc = cpc * s.cpcMul;
+    const sCrSite = crSite * s.crMul;
+    const sm = computeMetrics(sCpc, sCrSite, crDeal, check, margin, repeats);
+    const okClass = sm.netProfit >= 0 ? 'ok' : 'bad';
+    const verdict = sm.netProfit >= 0 ? 'Окупается' : 'Убыток';
+    body.innerHTML += `
+      <tr class="scenario-row ${okClass}">
+        <td><strong>${s.name}</strong></td>
+        <td class="num">${fmt(sCpc)}</td>
+        <td class="num">${sCrSite.toFixed(1)}%</td>
+        <td class="num">${fmt(sm.cpl)}</td>
+        <td class="num">${fmt(sm.cac)}</td>
+        <td class="num">${fmt(sm.netProfit)}</td>
+        <td class="verdict">${verdict}</td>
+      </tr>
+    `;
+  });
+
+  const goal = parseFloat($('goalClients').value) || 0;
+  const planEl = $('planning');
+  if (goal > 0 && crDeal > 0 && crSite > 0 && cpc > 0) {
+    const needLeads = Math.ceil(goal / (crDeal / 100));
+    const needClicks = Math.ceil(needLeads / (crSite / 100));
+    const monthlyBudget = needClicks * cpc;
+    const monthlyRevenue = goal * check;
+    const monthlyProfit = goal * m.ltv;
+    const monthlyNet = monthlyProfit - monthlyBudget;
+
+    planEl.innerHTML = `
+      Чтобы получать <strong>${fmtNum(goal)} клиентов</strong> в месяц, нужно:<br>
+      • <strong>${fmtNum(needLeads)} заявок</strong> в месяц (звонков, сообщений в WhatsApp)<br>
+      • <strong>${fmtNum(needClicks)} переходов</strong> на сайт из Директа<br>
+      • <strong>Бюджет на рекламу: ${fmt(monthlyBudget)}</strong> в месяц<br>
+      • Выручка с этого: <strong>${fmt(monthlyRevenue)}</strong>, прибыль (с учётом маржи и повторов): <strong>${fmt(monthlyProfit)}</strong><br>
+      • <strong>Чистыми после рекламы: ${fmt(monthlyNet)}</strong>
+    `;
+  } else {
+    planEl.innerHTML = 'Введите все цифры выше, чтобы увидеть план по бюджету.';
+  }
+}
+
+document.querySelectorAll('input, select').forEach(el => {
+  el.addEventListener('input', recalc);
+  el.addEventListener('change', recalc);
+});
+$('service').addEventListener('change', applyDefaults);
+
+applyDefaults();
+</script>
+
+</body>
+</html>
