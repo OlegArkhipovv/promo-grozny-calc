@@ -162,11 +162,35 @@
   .metric .value.ok { color: #137333; }
   .metric .desc { font-size: 12px; color: #888; margin-top: 4px; }
 
+  .table-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin: 12px -24px 0;
+    padding: 0 24px 6px;
+    scrollbar-width: thin;
+  }
+  .table-scroll::after {
+    content: '';
+    display: block;
+    height: 0;
+  }
   table {
     width: 100%;
+    min-width: 720px;
     border-collapse: collapse;
-    margin-top: 12px;
+    margin-top: 0;
     font-size: 14px;
+  }
+  .scroll-hint {
+    display: none;
+    font-size: 12px;
+    color: #888;
+    margin-top: 6px;
+  }
+  @media (max-width: 720px) {
+    .scroll-hint { display: block; }
+    .card { padding: 20px 16px; }
+    .wrap { padding: 20px 12px 60px; }
   }
   th, td {
     text-align: left;
@@ -426,21 +450,24 @@
 <div class="card">
   <h2><span class="step-num">5</span> Три сценария</h2>
   <p class="hint">Что будет в плохом, нормальном и хорошем варианте. Помогает понять диапазон.</p>
-  <table>
-    <thead>
-      <tr>
-        <th>Сценарий</th>
-        <th class="num">Цена клика</th>
-        <th class="num">Конверсия сайта</th>
-        <th class="num">Цена заявки</th>
-        <th class="num">Цена клиента</th>
-        <th class="num">Чистая прибыль / клиента</th>
-        <th>Вердикт</th>
-      </tr>
-    </thead>
-    <tbody id="scenariosBody">
-    </tbody>
-  </table>
+  <div class="table-scroll">
+    <table>
+      <thead>
+        <tr>
+          <th>Сценарий</th>
+          <th class="num">Цена клика</th>
+          <th class="num">Конверсия сайта</th>
+          <th class="num">Цена заявки</th>
+          <th class="num">Цена клиента</th>
+          <th class="num">Чистая прибыль / клиента</th>
+          <th>Вердикт</th>
+        </tr>
+      </thead>
+      <tbody id="scenariosBody">
+      </tbody>
+    </table>
+  </div>
+  <div class="scroll-hint">← свайпни таблицу влево-вправо, чтобы увидеть все колонки</div>
 </div>
 
 <div class="card">
