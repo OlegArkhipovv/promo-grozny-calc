@@ -57,6 +57,9 @@
     font-size: 14px;
     margin-bottom: 6px;
     color: #333;
+    display: flex;
+    align-items: center;
+    gap: 6px;
   }
   .field .tip {
     font-size: 12px;
@@ -77,6 +80,55 @@
     outline: none;
     border-color: #1a73e8;
   }
+
+  .help-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 19px;
+    height: 19px;
+    border-radius: 50%;
+    background: #e0e3e8;
+    color: #555;
+    border: none;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0;
+    transition: background 0.15s, color 0.15s;
+    font-family: inherit;
+  }
+  .help-btn:hover { background: #1a73e8; color: #fff; }
+  .help-btn.active { background: #1a73e8; color: #fff; }
+  .help-block {
+    display: none;
+    margin-top: 10px;
+    background: #f4f7fc;
+    border-radius: 8px;
+    padding: 14px 16px;
+    font-size: 13.5px;
+    line-height: 1.6;
+    border-left: 3px solid #1a73e8;
+    color: #2a2a2a;
+  }
+  .help-block.open { display: block; }
+  .help-section { margin-bottom: 10px; }
+  .help-section:last-child { margin-bottom: 0; }
+  .help-section .help-title {
+    color: #1a73e8;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    font-weight: 700;
+    margin-bottom: 3px;
+  }
+  .help-section .help-example {
+    color: #555;
+    margin-top: 3px;
+    font-size: 12.5px;
+  }
+  .help-section .help-warn { color: #c5221f; font-weight: 600; }
 
   .result-banner {
     padding: 24px;
@@ -199,24 +251,84 @@
   <p class="hint">Это то, что знаете только вы. Чем точнее — тем точнее результат.</p>
   <div class="row">
     <div class="field">
-      <label for="check">Средний чек, ₽</label>
+      <label for="check">Средний чек, ₽ <button type="button" class="help-btn" data-help="help-check" aria-label="Подробнее">?</button></label>
       <input type="number" id="check" min="0" step="100">
       <span class="tip">Сколько в среднем платит один клиент за эту услугу.</span>
+      <div class="help-block" id="help-check">
+        <div class="help-section">
+          <div class="help-title">Что это</div>
+          Средняя сумма, которую клиент платит за один заказ. <strong class="help-warn">Не путать с прибылью</strong> — это вся сумма счёта до вычета расходов.
+        </div>
+        <div class="help-section">
+          <div class="help-title">Как посчитать у себя</div>
+          Возьмите выручку за последний месяц и разделите на количество заказов.
+          <div class="help-example">Пример: 500 000 ₽ ÷ 50 заказов = 10 000 ₽ средний чек.</div>
+        </div>
+        <div class="help-section">
+          <div class="help-title">На что влияет</div>
+          Чем выше чек — тем больше можно потратить на привлечение клиента. При чеке 10 000 ₽ и марже 30% можно платить до 3 000 ₽ за клиента и быть в нуле.
+        </div>
+      </div>
     </div>
     <div class="field">
-      <label for="margin">Маржа, %</label>
+      <label for="margin">Маржа, % <button type="button" class="help-btn" data-help="help-margin" aria-label="Подробнее">?</button></label>
       <input type="number" id="margin" min="0" max="100" step="1">
       <span class="tip">Сколько остаётся от чека после прямых расходов (материалы, печать, монтаж, доставка). Не знаете — оставьте 40%.</span>
+      <div class="help-block" id="help-margin">
+        <div class="help-section">
+          <div class="help-title">Что это</div>
+          Доля чека, которая остаётся у вас после прямых расходов на сделку: материалы, доставка, монтаж, эквайринг, упаковка. <strong class="help-warn">Это не чистая прибыль</strong> — из неё ещё аренда, налоги, ваша зарплата. Но именно её можно тратить на привлечение клиентов.
+        </div>
+        <div class="help-section">
+          <div class="help-title">Как посчитать у себя</div>
+          (Чек − все прямые расходы на сделку) ÷ Чек × 100%.
+          <div class="help-example">Пример: чек 10 000 ₽, материалы 4 000 ₽, доставка 1 500 ₽, эквайринг 200 ₽. Прямых расходов 5 700 ₽. Маржа = (10 000 − 5 700) ÷ 10 000 × 100 = 43%.</div>
+        </div>
+        <div class="help-section">
+          <div class="help-title">На что влияет</div>
+          Маржа — это ваш реальный «бюджет на маркетинг». При марже 50% можно тратить на привлечение клиента половину чека. При марже 20% — только пятую часть. <strong class="help-warn">Главная ошибка предпринимателей — считать ROMI от чека, а не от маржи.</strong> Цифра кажется красивой, а в реальности — убыток.
+        </div>
+      </div>
     </div>
     <div class="field">
-      <label for="repeats">Заказов от клиента в год</label>
+      <label for="repeats">Заказов от клиента в год <button type="button" class="help-btn" data-help="help-repeats" aria-label="Подробнее">?</button></label>
       <input type="number" id="repeats" min="1" step="1">
       <span class="tip">Один и тот же клиент сколько раз в год к вам возвращается. Разовый — 1. Постоянный — 3-10.</span>
+      <div class="help-block" id="help-repeats">
+        <div class="help-section">
+          <div class="help-title">Что это</div>
+          Сколько раз один и тот же клиент возвращается к вам в течение года. Используется для расчёта реальной ценности клиента (LTV — Lifetime Value).
+        </div>
+        <div class="help-section">
+          <div class="help-title">Как посчитать у себя</div>
+          Посмотрите в CRM или Excel топ-10 постоянных клиентов за прошлый год — сколько заказов было у каждого. Берите среднее, а не максимум.
+          <div class="help-example">Пример: типография — постоянный клиент-ресторан заказывает меню и флаеры раз в 1-2 месяца → 6-12 заказов в год. Разовый — оформление витрины ко дню открытия → 1 заказ.</div>
+        </div>
+        <div class="help-section">
+          <div class="help-title">На что влияет</div>
+          Если клиент возвращается 5 раз — можно платить за его привлечение в 5 раз больше, чем при разовой сделке. Постоянные клиенты делают рекламу окупаемой даже при дорогом лиде.
+        </div>
+      </div>
     </div>
     <div class="field">
-      <label for="crDeal">Конверсия из заявки в сделку, %</label>
+      <label for="crDeal">Конверсия из заявки в сделку, % <button type="button" class="help-btn" data-help="help-crDeal" aria-label="Подробнее">?</button></label>
       <input type="number" id="crDeal" min="0" max="100" step="1">
       <span class="tip">Из 100 заявок (звонков, сообщений в WhatsApp) сколько в итоге покупают. Норма для рекламы — 20-40%.</span>
+      <div class="help-block" id="help-crDeal">
+        <div class="help-section">
+          <div class="help-title">Что это</div>
+          Из 100 заявок (звонков, сообщений в WhatsApp, заполненных форм) сколько реально доходят до оплаты.
+        </div>
+        <div class="help-section">
+          <div class="help-title">Как посчитать у себя</div>
+          Посмотрите в CRM или блокноте: сколько заявок было за прошлый месяц и сколько превратилось в оплаченные заказы. Подели одно на другое × 100.
+          <div class="help-example">Пример: за месяц 100 заявок, продали 35 → конверсия = 35%.</div>
+        </div>
+        <div class="help-section">
+          <div class="help-title">На что влияет</div>
+          Зависит от качества обработки заявок: скорости ответа, скриптов, дожима. Поднять с 25% до 35% часто проще и дешевле, чем найти больше трафика — а эффект тот же. <strong class="help-warn">Не путать с конверсией сайта</strong> — это разные шаги воронки.
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -226,14 +338,44 @@
   <p class="hint">Эти значения мы уточним после прогноза в Яндекс.Директе. Пока — ориентир для Чечни и СКФО.</p>
   <div class="row">
     <div class="field">
-      <label for="cpc">Цена клика в Директе, ₽</label>
+      <label for="cpc">Цена клика в Директе, ₽ <button type="button" class="help-btn" data-help="help-cpc" aria-label="Подробнее">?</button></label>
       <input type="number" id="cpc" min="1" step="1">
       <span class="tip">Сколько стоит один переход на ваш сайт. В Чечне обычно 15-50₽, на узких темах (транспорт, упаковка) выше.</span>
+      <div class="help-block" id="help-cpc">
+        <div class="help-section">
+          <div class="help-title">Что это</div>
+          CPC (Cost Per Click) — цена одного клика по объявлению в Яндекс.Директе. Сколько вы платите за каждого посетителя сайта.
+        </div>
+        <div class="help-section">
+          <div class="help-title">Как посчитать у себя</div>
+          В Яндекс.Директе → «Статистика» → колонка «Ср. цена клика». Или вручную: потраченный бюджет ÷ количество кликов.
+          <div class="help-example">Пример: за неделю потратили 10 000 ₽, получили 500 кликов → CPC = 10 000 ÷ 500 = 20 ₽.</div>
+        </div>
+        <div class="help-section">
+          <div class="help-title">На что влияет</div>
+          Чем выше конкуренция в нише и регионе — тем выше CPC. В Чечне обычно 15-50 ₽, в Москве по тем же запросам в 2-3 раза дороже. CPC напрямую влияет на стоимость заявки: при цене клика 30 ₽ и конверсии сайта 2% одна заявка стоит 1 500 ₽.
+        </div>
+      </div>
     </div>
     <div class="field">
-      <label for="crSite">Конверсия сайта в заявку, %</label>
+      <label for="crSite">Конверсия сайта в заявку, % <button type="button" class="help-btn" data-help="help-crSite" aria-label="Подробнее">?</button></label>
       <input type="number" id="crSite" min="0.1" max="20" step="0.1">
       <span class="tip">Из 100 посетителей сайта сколько оставят заявку. Норма 2-4%. С хорошим сайтом и УТП — до 5-7%.</span>
+      <div class="help-block" id="help-crSite">
+        <div class="help-section">
+          <div class="help-title">Что это</div>
+          Из 100 человек, зашедших на сайт из рекламы, сколько не уйдут, а оставят заявку (звонок, форма, сообщение в WhatsApp).
+        </div>
+        <div class="help-section">
+          <div class="help-title">Как посчитать у себя</div>
+          В Яндекс.Метрике посмотрите количество визитов и достижений цели «заявка» за месяц. Подели одно на другое × 100.
+          <div class="help-example">Пример: 1 000 визитов из рекламы, 25 заявок → конверсия = 25 ÷ 1 000 × 100 = 2.5%.</div>
+        </div>
+        <div class="help-section">
+          <div class="help-title">На что влияет</div>
+          <strong class="help-warn">Это самый сильный параметр во всей воронке.</strong> Поднял с 2% до 3% — лидов стало в 1.5 раза больше при том же бюджете. Часто дешевле улучшить сайт (УТП на первом экране, упростить форму, добавить WhatsApp), чем увеличивать рекламный бюджет.
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -470,6 +612,15 @@ document.querySelectorAll('input, select').forEach(el => {
   el.addEventListener('change', recalc);
 });
 $('service').addEventListener('change', applyDefaults);
+
+document.querySelectorAll('.help-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const block = document.getElementById(btn.dataset.help);
+    if (!block) return;
+    const isOpen = block.classList.toggle('open');
+    btn.classList.toggle('active', isOpen);
+  });
+});
 
 applyDefaults();
 </script>
